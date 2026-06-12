@@ -28,6 +28,9 @@ from shared.firestore import get_db
 logger = logging.getLogger('heartland.interaction_log')
 
 # Per-session in-memory tail (session_id -> list[entry]) for the console UI.
+# Bounded so a long-running session can't grow memory without limit on a
+# Cloud Run instance (durable history lives in Firestore, not here).
+_MAX_TAIL = 50
 _session_tail: dict[str, list] = {}
 
 
@@ -62,7 +65,10 @@ def log_interaction(tenant_id: str, session_id: str,
         'timestamp': now.strftime('%H:%M:%S'),
     }
 
-    _session_tail.setdefault(session_id, []).append(entry)
+    tail = _session_tail.setdefault(session_id, [])
+    tail.append(entry)
+    if len(tail) > _MAX_TAIL:
+        del tail[:-_MAX_TAIL]
 
     db = get_db()
     if db is not None:

@@ -45,6 +45,21 @@ def test_cancel_removes_staged_action():
     assert aid not in ctx.state.get('staged_actions', {})
 
 
+def test_stage_without_session_refuses():
+    # No tool_context → no session to persist against → must not hand back a
+    # dead action_id (HITL contract).
+    res = T.stage_send_whatsapp('hi', tool_context=None)
+    assert res['status'] == 'error'
+    assert 'action_id' not in res
+
+
+def test_remember_fact_refuses_without_tenant():
+    # PDPA / per-tenant isolation: never write to a shared 'unknown' doc.
+    ctx = FakeToolContext({'tenant_config': {}})
+    res = T.remember_business_fact('shop_name', 'Lim', tool_context=ctx)
+    assert res['status'] == 'error'
+
+
 def test_missing_inventory_is_needs_info_not_error():
     ctx = _ctx()
     res = T.check_inventory('rice', tool_context=ctx)

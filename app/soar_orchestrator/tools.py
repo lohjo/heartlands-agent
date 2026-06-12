@@ -270,7 +270,11 @@ def remember_business_fact(field: str, value: str,
         return {'status': 'error', 'message': 'Need both a field and a value to remember.'}
 
     config = _config(tool_context)
-    tenant_id = config.get('tenant_id', 'unknown')
+    tenant_id = config.get('tenant_id')
+    # PDPA + per-tenant isolation: never persist to a shared 'unknown' doc.
+    if not tenant_id or tenant_id == 'unknown':
+        return {'status': 'error',
+                'message': 'No merchant is bound to this session — refusing to save (per-tenant isolation).'}
 
     # inventory.<category> shorthand updates the inventory map in place.
     if field.startswith('inventory.'):
@@ -296,6 +300,12 @@ def remember_business_fact(field: str, value: str,
 # ===========================================================================
 
 def _stage(tool_context: ToolContext, action_type: str, preview: str, params: dict) -> dict:
+    # Without a session the staged action could never be persisted, so its
+    # action_id could never be executed or cancelled — that breaks the HITL
+    # contract. Refuse rather than hand back a dead id.
+    if tool_context is None:
+        return {'status': 'error',
+                'message': 'Cannot stage an action without a session to confirm against.'}
     action_id = f'act_{uuid.uuid4().hex[:8]}'
     _staged(tool_context)[action_id] = {
         'type': action_type, 'preview': preview, 'params': params,

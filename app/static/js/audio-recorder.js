@@ -50,8 +50,12 @@ function convertFloat32ToPCM(inputData) {
   // Create an Int16Array of the same length.
   const pcm16 = new Int16Array(inputData.length);
   for (let i = 0; i < inputData.length; i++) {
-    // Multiply by 0x7fff (32767) to scale the float value to 16-bit PCM range.
-    pcm16[i] = inputData[i] * 0x7fff;
+    // Mic samples can exceed [-1, 1] or be NaN. Sanitise then clamp before
+    // scaling so we never overflow/wrap Int16 (audible clicks / invalid PCM).
+    let s = inputData[i];
+    if (Number.isNaN(s)) s = 0;
+    s = Math.max(-1, Math.min(1, s));
+    pcm16[i] = Math.round(s * 0x7fff);
   }
   // Return the underlying ArrayBuffer.
   return pcm16.buffer;

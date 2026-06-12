@@ -54,7 +54,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('heartland')
 
 APP_NAME = 'heartland'
-DEMO_AGENT_MODEL = os.environ.get('DEMO_AGENT_MODEL', '')
+# Default to the same Live model as agent.py so the voice server and the agent
+# agree: an unset DEMO_AGENT_MODEL still boots in native-audio mode rather than
+# silently dropping to TEXT-only.
+DEMO_AGENT_MODEL = os.environ.get('DEMO_AGENT_MODEL', '') or 'gemini-2.0-flash-live-001'
 # Warm, natural prebuilt voice for the Copilot.
 COPILOT_VOICE = os.environ.get('COPILOT_VOICE', 'Aoede')
 

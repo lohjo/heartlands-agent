@@ -182,6 +182,9 @@ function handleFunctionResponse(fr) {
 // ── transcript + log ─────────────────────────────────────────────────────────
 function upsert(speaker, text, replace = false) {
   if (!text) return;
+  // Drop the "your conversation appears here" placeholder on first real line.
+  const hint = transcript.querySelector('.empty-hint');
+  if (hint) hint.remove();
   let entry = speaker === 'merchant' ? currentMerchantEntry : currentCopilotEntry;
   if (!entry || replace) {
     if (replace && entry) entry.remove();
