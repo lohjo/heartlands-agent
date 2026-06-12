@@ -1,0 +1,30 @@
+[project]
+name = "heartland-commons"
+version = "0.1.0"
+description = "Heartland Commons — voice-first AI Copilot for Singapore heartland merchants"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "python-dotenv>=1.0",
+    "httpx>=0.27",
+    "google-adk>=0.2.0",
+    "google-genai>=0.3.0",
+    "google-cloud-firestore>=2.16",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+# Packages live under app/ so uvicorn runs from inside app/ (see README).
+[tool.setuptools]
+package-dir = { "" = "app" }
+packages = ["soar_orchestrator", "soar_orchestrator.subagents", "shared"]
+
+[tool.pytest.ini_options]
+pythonpath = ["app"]
+asyncio_mode = "auto"

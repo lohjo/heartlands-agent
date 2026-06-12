@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Heartland Commons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=Space+Mono&display=swap" rel="stylesheet" />
+<style>
+  :root { --ink: #2b2b29; --ink-soft: #6f6d66; --paper: #f7f4ec; --card: #fffdf7; --accent: #cd7f47; --accent-soft: #f0e4d4; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Patrick Hand', system-ui, sans-serif; color: var(--ink);
+    background: var(--paper) radial-gradient(circle at 1px 1px, rgba(43,43,41,0.05) 1px, transparent 0);
+    background-size: 24px 24px; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 30px; }
+  .hero { max-width: 720px; text-align: center; }
+  .kicker { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); }
+  h1 { font-family: 'Caveat', cursive; font-size: 66px; line-height: 1; margin: 6px 0 10px; }
+  h1 .dot { color: var(--accent); }
+  p { font-size: 20px; color: var(--ink-soft); line-height: 1.5; margin: 0 auto 26px; max-width: 560px; }
+  .cta { display: inline-block; font-size: 21px; text-decoration: none; color: var(--ink);
+    background: var(--accent); border: 2.6px solid var(--ink); border-radius: 13px 10px 14px 9px / 9px 13px 10px 14px;
+    padding: 13px 28px; box-shadow: 4px 4px 0 rgba(43,43,41,0.85); }
+  .parts { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 42px; }
+  .part { background: var(--card); border: 3px solid var(--ink); border-radius: 16px; padding: 16px 18px; width: 210px;
+    box-shadow: 5px 6px 0 rgba(43,43,41,0.1); text-align: left; }
+  .part h3 { font-family: 'Caveat', cursive; font-size: 24px; }
+  .part .tag { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
+  .part p { font-size: 15px; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <div class="kicker">Woodlands · Singapore Heartland</div>
+    <h1>Heartland Commons<span class="dot">.</span></h1>
+    <p>One product for heartland merchants and the people around them — a voice-first
+       business copilot, a discovery trail, and a student volunteer corps.</p>
+    <a class="cta" href="/console">Open the Copilot →</a>
+    <div class="parts">
+      <div class="part"><span class="tag">for merchants</span><h3>AI Copilot</h3>
+        <p>Talk to it across the counter. It drafts, remembers, and handles the back-office.</p></div>
+      <div class="part"><span class="tag">for customers</span><h3>Discovery Trail</h3>
+        <p>Scan, collect stamps, unlock the stories behind the shops. (Phase 2)</p></div>
+      <div class="part"><span class="tag">for students</span><h3>Volunteer Corps</h3>
+        <p>Propose a project, earn VIA hours and a portfolio. (Phase 3)</p></div>
+    </div>
+  </div>
+</body>
+</html>

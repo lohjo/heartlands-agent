@@ -1,0 +1,53 @@
+# Heartland Commons — Cloud Build (ADR-6)
+# =======================================
+# Staging gate: every PR builds this image and deploys to the STAGING service.
+# Production promotion is MANUAL (a human runs the promote step / re-tags the
+# image to prod). This pipeline never deploys straight to prod.
+#
+# Region strategy: the Cloud Run service runs in us-central1 (co-located with
+# the Gemini Live native-audio model). Firestore (all merchant data) lives in
+# asia-southeast1 — provisioned separately, not by this build.
+#
+# Substitutions (placeholders — set in the trigger or with --substitutions):
+#   _SERVICE   Cloud Run service name        (default: heartland-commons-staging)
+#   _REGION    Cloud Run region              (default: us-central1)
+#   _PROJECT   GCP project id                (default: heartland-commons)
+
+substitutions:
+  _SERVICE: "heartland-commons-staging"
+  _REGION: "us-central1"
+  _PROJECT: "heartland-commons"
+
+steps:
+  # 1. Build the single shared image.
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - "${_REGION}-docker.pkg.dev/${_PROJECT}/heartland/${_SERVICE}:${SHORT_SHA}"
+      - .
+
+  # 2. Push to Artifact Registry.
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - "${_REGION}-docker.pkg.dev/${_PROJECT}/heartland/${_SERVICE}:${SHORT_SHA}"
+
+  # 3. Deploy to STAGING only. Production is promoted manually.
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - "${_SERVICE}"
+      - "--image=${_REGION}-docker.pkg.dev/${_PROJECT}/heartland/${_SERVICE}:${SHORT_SHA}"
+      - "--region=${_REGION}"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=1,GOOGLE_CLOUD_PROJECT=${_PROJECT},GOOGLE_CLOUD_LOCATION=${_REGION},DEMO_AGENT_MODEL=gemini-live-2.5-flash-native-audio,FIRESTORE_DATABASE=(default)"
+
+images:
+  - "${_REGION}-docker.pkg.dev/${_PROJECT}/heartland/${_SERVICE}:${SHORT_SHA}"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
